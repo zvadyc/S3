@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escuela Quemados</title>
+  <style>
+    /* Estilos existentes */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #ff9a8b, #ff6f61, #ff3d00);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(90deg, #ff6f61, #ff9a8b);
+      padding: 15px 20px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav h1 {
+      font-size: 36px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, #ff3d00, #ffa726);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: slideIn 1.5s ease-out;
+    }
+
+    .form-container {
+      margin-top: 150px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+      animation: fadeIn 1.5s ease-in;
+    }
+
+    .form-container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-container label {
+      display: block;
+      margin-bottom: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .form-container input, 
+    .form-container textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 14px;
+    }
+
+    .form-container button {
+      width: 60px;
+      height: 60px;
+      background: #ff3d00;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .form-container button:hover {
+      background: #ff7043;
+      transform: scale(1.1);
+    }
+
+    .form-container button::before {
+      content: '→';
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .message-box-container {
+      margin-top: 40px;
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+    }
+
+    .message-box {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Estilo especial para mensajes del Creador */
+    .message-box.creator {
+      border: 2px solid gold;
+      background: rgba(255, 215, 0, 0.2);
+    }
+
+    /* Estilo especial para mensajes del subOwner */
+    .message-box.subOwner {
+      border: 2px solid #ff7043;
+      background: rgba(255, 112, 67, 0.2);
+    }
+
+    .creator-badge, .subOwner-badge, .user-badge {
+      font-size: 12px;
+      background: gold;
+      color: black;
+      border-radius: 3px;
+      padding: 2px 5px;
+      margin-left: 5px;
+    }
+
+    .subOwner-badge {
+      background: #ff7043;
+    }
+
+    .user-badge {
+      background: #ffcc00;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(-100%);
+      }
+      to {
+        transform: translateX(0);
+      }
+    }
+
+    .users-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .users-modal ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .users-modal li {
+      margin: 5px 0;
+      cursor: pointer;
+    }
+
+    .close-modal {
+      display: block;
+      margin-top: 10px;
+      padding: 10px;
+      background: #ff7043;
+      color: white;
+      text-align: center;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>Quemados</h1>
+    </nav>
+  </header>
+
+  <div class="form-container" id="name-form-container" style="display: none;">
+    <h2>Ingresa tu Nombre</h2>
+    <form id="name-form">
+      <label for="name">Nombre:</label>
+      <input type="text" id="name" name="name" required placeholder="Tu nombre...">
+      <button type="submit">Guardar</button>
+    </form>
+  </div>
+
+  <div class="form-container" id="message-form-container" style="display: none;">
+    <h2>Envía tu Mensaje</h2>
+    <form id="message-form">
+      <textarea id="message" name="message" rows="5" required placeholder="Escribe tu mensaje..."></textarea>
+      <button type="submit"></button>
+    </form>
+  </div>
+
+  <div id="messages" class="message-box-container"></div>
+
+  <!-- Botón solo visible para el usuario S3 -->
+  <div id="admin-controls" style="display: none; margin-top: 20px;">
+    <button id="toggle-chat" style="padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #ff7043; color: white; border: none; border-radius: 5px;">Activar/Desactivar Chat</button>
+  </div>
+
+  <!-- Modal para mostrar los usuarios -->
+  <div id="users-modal" class="users-modal">
+    <h2>Usuarios Registrados</h2>
+    <ul id="user-list"></ul>
+    <button class="close-modal">Cerrar</button>
+  </div>
+
+  <script>
+    const nameForm = document.getElementById("name-form");
+    const nameFormContainer = document.getElementById("name-form-container");
+    const messageFormContainer = document.getElementById("message-form-container");
+    const form = document.getElementById("message-form");
+    const messagesContainer = document.getElementById("messages");
+    const toggleChatButton = document.getElementById("toggle-chat");
+    const usersModal = document.getElementById("users-modal");
+    const userList = document.getElementById("user-list");
+    const closeModalButton = document.querySelector(".close-modal");
+    let userName = localStorage.getItem("userName");
+    let userRank = localStorage.getItem("userRank") || "users"; // Rango por defecto es "users"
+    let chatActive = JSON.parse(localStorage.getItem("chatActive")) || true; // Estado del chat
+
+    const usedNames = JSON.parse(localStorage.getItem("usedNames")) || [];
+    const userRanks = JSON.parse(localStorage.getItem("userRanks")) || {}; // Almacenamos los rangos
+
+    if (userName) {
+      showMessageForm();
+    } else {
+      nameFormContainer.style.display = "block";
+      messageFormContainer.style.display = "none";
+    }
+
+    // Mostrar controles de administrador solo para S3
+    if (userName === "S3") {
+      document.getElementById("admin-controls").style.display = "block";
+    }
+
+    nameForm.addEventListener("submit", function(event) {
+      event.preventDefault();
+      const name = document.getElementById("name").value.trim();
+
+      if (usedNames.includes(name)) {
+        alert("El nombre ya está en uso. Elige otro.");
+        return;
+      }
+
+      localStorage.setItem("userName", name);
+      usedNames.push(name);
+      localStorage.setItem("usedNames", JSON.stringify(usedNames));
+      userName = name;
+
+      // Asignar el rango "users" por defecto
+      userRanks[name] = "users";
+      localStorage.setItem("userRanks", JSON.stringify(userRanks));
+
+      showMessageForm();
+    });
+
+    function showMessageForm() {
+      nameFormContainer.style.display = "none";
+      messageFormContainer.style.display = "block";
+    }
+
+    // Función para cargar los mensajes
+    function loadMessages() {
+      const savedMessages = JSON.parse(localStorage.getItem("messages")) || [];
+      messagesContainer.innerHTML = '';
+      savedMessages.forEach((message, index) => {
+        const messageBox = document.createElement("div");
+        messageBox.classList.add("message-box");
+
+        if (message.message.includes("Owner0")) {
+          messageBox.classList.add("subOwner");
+          messageBox.innerHTML = `<strong>${message.name} <span class="subOwner-badge">subOwner</span></strong>: <p>${message.message}</p>`;
+        } else if (message.name === "S3") {
+          messageBox.classList.add("creator");
+          messageBox.innerHTML = `<strong>${message.name} <span class="creator-badge">Creador</span></strong>: <p>${message.message}</p>`;
+        } else {
+          messageBox.innerHTML = `<strong>${message.name} <span class="user-badge">users</span></strong>: <p>${message.message}</p>`;
+        }
+
+        messageBox.setAttribute("data-index", index);
+        messageBox.addEventListener("click", () => confirmDeleteMessage(index, message.name));
+        messagesContainer.appendChild(messageBox);
+      });
+    }
+
+    function confirmDeleteMessage(index, messageOwner) {
+      if (messageOwner === "S3" && userName !== "S3") {
+        alert("No puedes eliminar los mensajes de S3.");
+        return;
+      }
+
+      // Solo los usuarios con permisos adecuados (Creador o subOwner) pueden eliminar mensajes.
+      if (userRanks[userName] !== "subOwner" && userRanks[userName] !== "Creator" && userName !== "S3") {
+        alert("No tienes permisos para eliminar este mensaje.");
+        return;
+      }
+
+      const confirmDelete = confirm("¿Estás seguro de que deseas eliminar este mensaje?");
+      if (confirmDelete) {
+        deleteMessage(index);
+      }
+    }
+
+    function deleteMessage(index) {
+      const savedMessages = JSON.parse(localStorage.getItem("messages")) || [];
+      savedMessages.splice(index, 1);
+      localStorage.setItem("messages", JSON.stringify(savedMessages));
+      loadMessages(); // Recargar los mensajes después de eliminar uno
+    }
+
+    window.onload = loadMessages;
+
+    form.addEventListener("submit", function(event) {
+      event.preventDefault();
+      if (!chatActive && userName !== "S3") {
+        alert("El chat está desactivado. Solo el Creador puede enviar mensajes.");
+        return;
+      }
+
+      let message = document.getElementById("message").value;
+
+      if (message.toLowerCase() === "reset" && userName === "S3") {
+        resetS3Data();
+        return;
+      }
+
+      const newMessage = { name: userName, message };
+      const savedMessages = JSON.parse(localStorage.getItem("messages")) || [];
+      savedMessages.push(newMessage);
+      localStorage.setItem("messages", JSON.stringify(savedMessages));
+      loadMessages();
+
+      document.getElementById("message").value = '';
+    });
+
+    function resetS3Data() {
+      const savedMessages = JSON.parse(localStorage.getItem("messages")) || [];
+      const filteredMessages = savedMessages.filter(message => message.name !== "S3");
+      localStorage.setItem("messages", JSON.stringify(filteredMessages));
+      alert("Se han borrado todos los datos de S3.");
+      loadMessages();
+    }
+
+    toggleChatButton.addEventListener("click", function() {
+      chatActive = !chatActive;
+      localStorage.setItem("chatActive", JSON.stringify(chatActive));
+      alert(chatActive ? "Chat activado" : "Chat desactivado");
+    });
+
+    closeModalButton.addEventListener("click", function() {
+      usersModal.style.display = "none";
+    });
+
+    setInterval(loadMessages, 2000);
+  </script>
+</body>
+</html>
